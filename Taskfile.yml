@@ -1,0 +1,31 @@
+version: "3"
+
+vars:
+  VENV_DIR: .venv
+  PYTHON: "{{.VENV_DIR}}/bin/python"
+  PIP: "{{.VENV_DIR}}/bin/pip"
+
+tasks:
+  setup:
+    desc: Create a virtualenv and install backend dependencies
+    cmds:
+      - python3 -m venv {{.VENV_DIR}}
+      - "{{.PIP}} install --upgrade pip"
+      - "{{.PIP}} install -r backend/requirements.txt"
+
+  dev:services:
+    desc: Start DynamoDB Local in Docker
+    dir: docker
+    cmds:
+      - docker compose up -d
+
+  dev:services:down:
+    desc: Stop DynamoDB Local
+    dir: docker
+    cmds:
+      - docker compose down
+
+  py:DynamoDB:
+    desc: Create DynamoDB tables and seed simulation data
+    cmds:
+      - "{{.PYTHON}} db/init_dynamodb.py"
