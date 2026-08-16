@@ -65,6 +65,12 @@ TABLES = [
         ],
         "BillingMode": "PAY_PER_REQUEST",
     },
+    {
+        "TableName": "Users",
+        "KeySchema": [{"AttributeName": "user_id", "KeyType": "HASH"}],
+        "AttributeDefinitions": [{"AttributeName": "user_id", "AttributeType": "S"}],
+        "BillingMode": "PAY_PER_REQUEST",
+    },
 ]
 
 SIMULATION_DATA = {
@@ -93,6 +99,35 @@ SIMULATION_DATA = {
         {"farm_id": "farm-001", "alert_type": "heavy_rain", "last_triggered": None, "threshold_mm": 50},
         {"farm_id": "farm-002", "alert_type": "low_soil_moisture", "last_triggered": None, "threshold_percent": 20},
     ],
+"Users": [
+    {
+        "user_id": "user-001",
+        "email": "superadmin@farmmate.nz",
+        "name": "Super Admin",
+        "hashed_password": "$2b$12$LHwIuelO4wSkFC1ajn2/HuIZSdqTJT9D0HrQYv5TQQEQQvOj1yrrq",
+        "role": "super-admin",
+        "farm_id": None,
+        "status": "active",
+    },
+    {
+        "user_id": "user-002",
+        "email": "admin@sunnyside.nz",
+        "name": "Sunnyside Admin",
+        "hashed_password": "$2b$12$LHwIuelO4wSkFC1ajn2/HuIZSdqTJT9D0HrQYv5TQQEQQvOj1yrrq",
+        "role": "admin",
+        "farm_id": "farm-001",
+        "status": "active",
+    },
+    {
+        "user_id": "user-003",
+        "email": "staff@sunnyside.nz",
+        "name": "Sunnyside Staff",
+        "hashed_password": "$2b$12$LHwIuelO4wSkFC1ajn2/HuIZSdqTJT9D0HrQYv5TQQEQQvOj1yrrq",
+        "role": "staff",
+        "farm_id": "farm-001",
+        "status": "active",
+    },
+],
 }
 
 

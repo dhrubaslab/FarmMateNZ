@@ -44,6 +44,7 @@ TABLE_PADDOCKS = "Paddocks"
 TABLE_LIVESTOCK = "Livestock"
 TABLE_TASK_LOGS = "TaskLogs"
 TABLE_ALERT_STATE = "AlertState"
+TABLE_USERS = "Users"
 
 
 def get_table(table_name: str):
