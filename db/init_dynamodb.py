@@ -1,11 +1,11 @@
 """Create DynamoDB tables and load simulation data against DynamoDB Local.
 
-Placeholder schema: extend TABLES / SIMULATION_DATA once the real data
-model is decided.
+Placeholder schema: extend TABLES / SIMULATION_DATA further once the real
+data model is finalised.
 """
 import boto3
 
-ENDPOINT_URL = "http://localhost:8000"
+ENDPOINT_URL = "http://localhost:8001"
 REGION = "ap-southeast-2"
 
 TABLES = [
@@ -14,7 +14,57 @@ TABLES = [
         "KeySchema": [{"AttributeName": "farm_id", "KeyType": "HASH"}],
         "AttributeDefinitions": [{"AttributeName": "farm_id", "AttributeType": "S"}],
         "BillingMode": "PAY_PER_REQUEST",
-    }
+    },
+    {
+        "TableName": "Paddocks",
+        "KeySchema": [
+            {"AttributeName": "farm_id", "KeyType": "HASH"},
+            {"AttributeName": "paddock_id", "KeyType": "RANGE"},
+        ],
+        "AttributeDefinitions": [
+            {"AttributeName": "farm_id", "AttributeType": "S"},
+            {"AttributeName": "paddock_id", "AttributeType": "S"},
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+    },
+    {
+        "TableName": "Livestock",
+        "KeySchema": [
+            {"AttributeName": "farm_id", "KeyType": "HASH"},
+            {"AttributeName": "livestock_id", "KeyType": "RANGE"},
+        ],
+        "AttributeDefinitions": [
+            {"AttributeName": "farm_id", "AttributeType": "S"},
+            {"AttributeName": "livestock_id", "AttributeType": "S"},
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+    },
+    {
+        "TableName": "TaskLogs",
+        "KeySchema": [
+            {"AttributeName": "farm_id", "KeyType": "HASH"},
+            # e.g. "2026-08-16T10:00:00#task-001" — keeps logs naturally time-ordered
+            {"AttributeName": "timestamp_task_id", "KeyType": "RANGE"},
+        ],
+        "AttributeDefinitions": [
+            {"AttributeName": "farm_id", "AttributeType": "S"},
+            {"AttributeName": "timestamp_task_id", "AttributeType": "S"},
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+    },
+    {
+        "TableName": "AlertState",
+        "KeySchema": [
+            {"AttributeName": "farm_id", "KeyType": "HASH"},
+            # e.g. "frost", "heavy_rain", "low_soil_moisture"
+            {"AttributeName": "alert_type", "KeyType": "RANGE"},
+        ],
+        "AttributeDefinitions": [
+            {"AttributeName": "farm_id", "AttributeType": "S"},
+            {"AttributeName": "alert_type", "AttributeType": "S"},
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+    },
 ]
 
 SIMULATION_DATA = {
@@ -22,7 +72,27 @@ SIMULATION_DATA = {
         {"farm_id": "farm-001", "name": "Sunnyside Dairy", "region": "Waikato", "size_hectares": 120},
         {"farm_id": "farm-002", "name": "Green Valley Farm", "region": "Canterbury", "size_hectares": 85},
         {"farm_id": "farm-003", "name": "Coastal Pastures", "region": "Bay of Plenty", "size_hectares": 60},
-    ]
+    ],
+    "Paddocks": [
+        {"farm_id": "farm-001", "paddock_id": "paddock-01", "name": "North Block", "area_hectares": 15, "stock_type": "dairy"},
+        {"farm_id": "farm-001", "paddock_id": "paddock-02", "name": "River Flat", "area_hectares": 10, "stock_type": "dairy"},
+        {"farm_id": "farm-002", "paddock_id": "paddock-01", "name": "Home Paddock", "area_hectares": 20, "stock_type": "beef"},
+    ],
+    "Livestock": [
+        {"farm_id": "farm-001", "livestock_id": "stock-01", "type": "dairy cow", "count": 85, "paddock_id": "paddock-01"},
+        {"farm_id": "farm-002", "livestock_id": "stock-01", "type": "beef cattle", "count": 40, "paddock_id": "paddock-01"},
+        {"farm_id": "farm-003", "livestock_id": "stock-01", "type": "sheep", "count": 200, "paddock_id": "paddock-01"},
+    ],
+    "TaskLogs": [
+        {"farm_id": "farm-001", "timestamp_task_id": "2026-08-01T08:00:00#task-001", "task": "Drenching", "paddock_id": "paddock-01"},
+        {"farm_id": "farm-001", "timestamp_task_id": "2026-08-05T09:30:00#task-002", "task": "Moved stock", "paddock_id": "paddock-02"},
+        {"farm_id": "farm-002", "timestamp_task_id": "2026-08-03T07:00:00#task-001", "task": "Mowing", "paddock_id": "paddock-01"},
+    ],
+    "AlertState": [
+        {"farm_id": "farm-001", "alert_type": "frost", "last_triggered": None, "threshold_celsius": 2},
+        {"farm_id": "farm-001", "alert_type": "heavy_rain", "last_triggered": None, "threshold_mm": 50},
+        {"farm_id": "farm-002", "alert_type": "low_soil_moisture", "last_triggered": None, "threshold_percent": 20},
+    ],
 }
 
 

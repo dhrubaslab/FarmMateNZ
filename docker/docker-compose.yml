@@ -1,7 +1,27 @@
 services:
+  backend:
+    build: ../backend
+    container_name: farmmatenz-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../backend:/app
+    environment:
+      - DYNAMODB_ENDPOINT_URL=http://dynamodb-local:8000
+    depends_on:
+      - dynamodb-local
+
+  frontend:
+    build: ../frontend
+    container_name: farmmatenz-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/app
+
   dynamodb-local:
     image: amazon/dynamodb-local:latest
     container_name: farmmatenz-dynamodb-local
     command: ["-jar", "DynamoDBLocal.jar", "-inMemory", "-sharedDb"]
     ports:
-      - "8000:8000"
+      - "8001:8000"
