@@ -4,6 +4,8 @@ import { useAuthStore } from "../stores/auth";
 import Login from "../views/Login.vue";
 import Dashboard from "../views/Dashboard.vue";
 
+import Farms from "../views/Farms.vue";
+
 const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", name: "login", component: Login },
@@ -12,6 +14,13 @@ const routes = [
     name: "dashboard",
     component: Dashboard,
     meta: { requiresAuth: true },
+  },
+  // Added pages during the holidays
+  {
+    path: "/farms",
+    name: "farms",
+    component: Farms,
+    meta: { requiresAuth: true }
   },
 ];
 
