@@ -8,7 +8,7 @@ const router = useRouter();
 const route = useRoute();
 const mobileOpen = ref(false);
 
-// Mueu click on the left
+// Mueu click on the  - It's public Menu Navigation
 const links = [
   { name: "dashboard", label: "Dashboard", icon: "grid" },
   { name: "farms", label: "Farm", icon: "farm" },
@@ -17,11 +17,12 @@ const links = [
   { name: "health", label: "System Health", icon: "health" },
 ];
 
-function navigate(name) {
+// Arrow functions
+const navigate = (name) => {
   mobileOpen.value = false;
   router.push({ name });
 }
-
+//ordinary functions
 function logout() {
   auth.logout();
   router.push({ name: "login" });
@@ -163,6 +164,7 @@ function initials() {
 </template>
 
 <style scoped>
+/* Brand logo */
 .brand-mark {
   display: grid;
   place-items: center;
@@ -175,6 +177,7 @@ function initials() {
   box-shadow: 0 8px 20px rgba(38, 110, 58, 0.2);
 }
 
+/* Smaller logo for mobile header */
 .brand-mark.small {
   width: 34px;
   height: 34px;
@@ -182,6 +185,7 @@ function initials() {
   font-size: 0.8rem;
 }
 
+/* Desktop navigation item */
 .nav-item {
   display: flex;
   width: 100%;
@@ -196,17 +200,20 @@ function initials() {
   transition: 0.2s;
 }
 
+/* Navigation hover state */
 .nav-item:hover {
   background: #f2f8f1;
   color: #245d35;
 }
 
+/* Active navigation item */
 .nav-item-active {
   background: #e9f5e7;
   color: #216236;
   box-shadow: inset 3px 0 #4f9d69;
 }
 
+/* Navigation icon container */
 .nav-icon {
   display: grid;
   place-items: center;
@@ -214,6 +221,7 @@ function initials() {
   height: 20px;
 }
 
+/* Navigation SVG icon */
 .nav-icon svg {
   width: 18px;
   height: 18px;
@@ -224,6 +232,7 @@ function initials() {
   stroke-linejoin: round;
 }
 
+/* User avatar */
 .avatar {
   display: grid;
   place-items: center;
@@ -236,6 +245,7 @@ function initials() {
   font-weight: 800;
 }
 
+/* Logout and mobile menu buttons */
 .logout-icon,
 .menu-button {
   display: grid;
@@ -246,12 +256,14 @@ function initials() {
   color: #718079;
 }
 
+/* Logout and menu hover state */
 .logout-icon:hover,
 .menu-button:hover {
   background: #f0f6ef;
   color: #245d35;
 }
 
+/* Mobile navigation item */
 .mobile-nav-item {
   text-align: left;
   border-radius: 10px;
@@ -261,6 +273,7 @@ function initials() {
   color: #64756a;
 }
 
+/* Active mobile navigation item */
 .mobile-nav-item.active {
   background: #e9f5e7;
   color: #216236;

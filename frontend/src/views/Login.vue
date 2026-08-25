@@ -103,6 +103,7 @@ async function handleLogin() {
 </template>
 
 <style scoped>
+/* Brand */
 .brand-mark {
   display: grid;
   place-items: center;
@@ -120,6 +121,7 @@ async function handleLogin() {
   color: white
 }
 
+/* Statistics */
 .glass-stat {
   border: 1px solid rgba(255, 255, 255, .16);
   border-radius: 13px;
@@ -138,6 +140,7 @@ async function handleLogin() {
   color: #d7ead6
 }
 
+/* Decorative circles */
 .circle {
   position: absolute;
   border-radius: 50%;
@@ -158,6 +161,7 @@ async function handleLogin() {
   height: 280px
 }
 
+/* Form fields */
 .field {
   display: grid;
   gap: .4rem;
@@ -179,6 +183,7 @@ async function handleLogin() {
   box-shadow: 0 0 0 3px #eaf5ea
 }
 
+/* Btn */
 .button {
   width: 100%;
   border-radius: 12px;

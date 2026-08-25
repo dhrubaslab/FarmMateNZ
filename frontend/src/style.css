@@ -69,6 +69,7 @@ body,
 
 body {
   min-width: 320px;
+  background: #f4f8f3;
 }
 
 button,
@@ -80,6 +81,15 @@ select {
 
 button {
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 ::selection {

@@ -7,6 +7,22 @@ import vueLogo from '../assets/vue.svg'
 const count = ref(0)
 </script>
 
+<!-- 
+
+  This HelloWorld is useless code; should we delete this file or not?
+  I usually delete it.
+
+  Because I'm a bit of a germaphobe lol. No worries if u hope it to stay here, that's fine too lol
+  
+  Lol joking lol~~
+
+  No need to worry this work, have a great holiday, I just happen to have some free time.
+  I've been drinking too much coffee these past few days, so I'm working at night.
+  Enjoying your holiday~~
+  
+-->
+
+
 <template>
   <section id="center">
     <div class="hero">

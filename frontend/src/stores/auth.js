@@ -20,6 +20,7 @@ export const useAuthStore = defineStore("auth", {
     role: (state) => state.user?.role || null,
   },
 
+
   actions: {
     async login(email, password) {
       // FastAPI's OAuth2PasswordRequestForm expects x-www-form-urlencoded,

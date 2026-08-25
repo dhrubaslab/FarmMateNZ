@@ -4,9 +4,18 @@ import { useAuthStore } from "../stores/auth";
 import Login from "../views/Login.vue";
 import Dashboard from "../views/Dashboard.vue";
 
+// New one- added pages during the holidays
 import Farms from "../views/Farms.vue";
+import CreateFarm from "../views/CreateFarm.vue";
+import InviteUser from "../views/InviteUser.vue";
+import ResetPassword from "../views/ResetPassword.vue";
+import Profile from "../views/Profile.vue";
+import Health from "../views/Health.vue";
 
 const routes = [
+  // Temporary development mode:
+  // Login is still available, but it is not required
+  // { path: "/", redirect: "/dashboard" },
   { path: "/", redirect: "/login" },
   { path: "/login", name: "login", component: Login },
   {
@@ -16,12 +25,13 @@ const routes = [
     meta: { requiresAuth: true },
   },
   // Added pages during the holidays
-  {
-    path: "/farms",
-    name: "farms",
-    component: Farms,
-    meta: { requiresAuth: true }
-  },
+  { path: "/farms", name: "farms", component: Farms, meta: { requiresAuth: true } },
+  { path: "/farms/new", name: "create-farm", component: CreateFarm, meta: { requiresAuth: true } },
+  { path: "/invite", name: "invite", component: InviteUser, meta: { requiresAuth: true } },
+  { path: "/reset-password", name: "reset-password", component: ResetPassword, meta: { requiresAuth: true } },
+  { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true } },
+  { path: "/health", name: "health", component: Health, meta: { requiresAuth: true } },
+  { path: "/:pathMatch(.*)*", redirect: "/dashboard" },
 ];
 
 const router = createRouter({
@@ -35,7 +45,7 @@ router.beforeEach((to) => {
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
     return { name: "login" };
   }
-  if (to.name === "login" && auth.isLoggedIn) {
+  if ((to.name === "login" || to.name === 'register') && auth.isLoggedIn) {
     return { name: "dashboard" };
   }
 });
