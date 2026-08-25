@@ -20,7 +20,6 @@ function extractError(errorObject) {
   if (Array.isArray(detail)) {
     return detail.map((item) => item.msg || JSON.stringify(item)).join("; ");
   }
-
   if (typeof detail === "string") return detail;
   if (errorObject?.response?.status === 500) {
     return "The server returned an internal error. Check the FastAPI terminal for the backend traceback.";

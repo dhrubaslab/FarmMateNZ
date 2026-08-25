@@ -49,6 +49,7 @@ async function handleLogin() {
             FarmMate NZ brings paddocks, livestock, tasks & weather-aware Taking 2gether in the 1 lightweight workspace
           </p>
         </div>
+
         <div class="relative z-10 grid grid-cols-3 gap-2">
           <div class="glass-stat">
             <b>Farm</b>

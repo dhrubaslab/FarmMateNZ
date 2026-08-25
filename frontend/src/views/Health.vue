@@ -40,6 +40,7 @@ onMounted(check);
         <button class="secondary-button" @click="check">↻ Check Again</button>
       </div>
       <div v-if="error" class="alert error">{{ error }}</div>
+
       <!-- Health status -->
       <div class="card">
         <div class="health-row">
@@ -49,6 +50,7 @@ onMounted(check);
             <p>{{ checkedAt ? `Checked ${checkedAt}` : "Waiting for response..." }}</p>
           </div>
         </div>
+
         <div class="mt-6">
           <div class="eyebrow">Connection</div>
           <div v-if="!loading" class="health-summary">

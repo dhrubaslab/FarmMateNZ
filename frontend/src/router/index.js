@@ -14,7 +14,8 @@ import Health from "../views/Health.vue";
 
 const routes = [
   // Temporary development mode:
-  // Login is still available, but it is not required
+  // Login is still available, but it is not required 
+  // jsut for test
   // { path: "/", redirect: "/dashboard" },
   { path: "/", redirect: "/login" },
   { path: "/login", name: "login", component: Login },

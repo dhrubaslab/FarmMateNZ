@@ -3,4 +3,6 @@
 // endpoints, so this helper never invents or discovers undocumented routes
 export async function getResource(resource) {
   throw new Error(`No documented API endpoint exists for resource: ${resource}.`);
+  
 }
+

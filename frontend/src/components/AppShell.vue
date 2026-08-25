@@ -38,7 +38,6 @@ function initials() {
   <div class="min-h-screen bg-[#f4f8f3] text-slate-800">
     <aside class="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-green-100 bg-white lg:flex lg:flex-col">
 
-
       <!-- Logo -->
       <div class="px-6 py-6">
         <button class="flex items-center gap-3 text-left" @click="navigate('dashboard')">
@@ -53,7 +52,6 @@ function initials() {
           </div>
         </button>
       </div>
-
       <nav class="flex-1 space-y-1 px-3">
         <!-- Click the button menu -->
         <button v-for="link in links" :key="link.name" class="nav-item"

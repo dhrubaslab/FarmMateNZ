@@ -18,6 +18,7 @@ export const updateFarm = (farmId, data) =>
     region: data.region,
     size_hectares: Number(data.size_hectares),
   });
+  
 export const deleteFarm = (farmId) =>
   api.delete(`/farms/${encodeURIComponent(farmId)}`);
 

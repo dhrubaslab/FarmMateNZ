@@ -48,6 +48,7 @@ onMounted(load);
         <button class="secondary-button" @click="load">↻ Refresh</button>
       </div>
       <div v-if="error" class="alert error">{{ error }}</div>
+
       <!-- Account details -->
       <div class="card">
         <div class="grid gap-4 sm:grid-cols-2">

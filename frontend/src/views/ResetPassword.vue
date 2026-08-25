@@ -59,6 +59,7 @@ async function submit() {
             <input v-model="new_password" class="field-input" type="password" required autocomplete="new-password" />
           </label>
         </div>
+
         <div v-if="error" class="alert error">{{ error }}</div>
         <div v-if="success" class="alert success">{{ success }}</div>
         <div class="mt-6 flex justify-end">

@@ -248,11 +248,13 @@ onMounted(() => {
               <button class="icon-button" title="Refresh farms" @click="loadFarms()">↻</button>
             </div>
           </div>
+
           <div v-if="loading" class="empty-state">Loading farms...</div>
           <div v-else-if="farms.length === 0" class="empty-state">
             <strong>No farms returned by the API</strong>
             <span>Create a farm to add the first record.</span>
           </div>
+
           <div v-else class="farm-list">
             <button v-for="item in farms" :key="item.farm_id" class="farm-row"
               :class="selectedFarm?.farm_id === item.farm_id ? 'selected' : ''" @click="selectFarm(item)">

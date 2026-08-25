@@ -8,7 +8,6 @@ function readUser() {
     return null;
   }
 }
-
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: localStorage.getItem("farmmate_token") || null,

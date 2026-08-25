@@ -66,6 +66,7 @@ async function submit() {
             <input v-model="form.farm_id" class="field-input" placeholder="Optional farm_id" />
           </label>
         </div>
+        <!-- success vs error-->
         <div v-if="error" class="alert error">{{ error }}</div>
         <div v-if="success" class="alert success">{{ success }}</div>
         <div class="mt-6 flex justify-end">

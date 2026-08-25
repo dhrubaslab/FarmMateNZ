@@ -14,7 +14,6 @@ defineProps({
         <div v-if="endpoint">
             <strong>API:</strong> {{ endpoint }}
         </div>
-
         <!-- Additional note -->
         <div v-if="note" class="mt-0.5 text-green-700">
             {{ note }}
