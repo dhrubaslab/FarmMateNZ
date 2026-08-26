@@ -56,7 +56,7 @@ async function submit() {
   <AppShell>
     <section class="mx-auto max-w-3xl">
       <header class="page-header">
-        <div>
+        <div class="box-left">
           <span class="eyebrow">New farm</span>
           <h1 class="page-title">Create Farm</h1>
           <p class="page-subtitle">Add a farm using the fields supported by the Farm API.</p>
@@ -67,7 +67,7 @@ async function submit() {
       <form class="card" @submit.prevent="submit">
         <div v-if="error" class="alert error">{{ error }}</div>
 
-        <div class="form-grid">
+        <div class="form-grid box-left">
           <label class="field-label">
             Name
             <input v-model.trim="form.name" class="field-input" required maxlength="200" />

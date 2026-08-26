@@ -9,7 +9,7 @@ const result = ref(null);
 const checkedAt = ref("");
 
 // Check backend health status
-async function check() {
+const check = async () => {
   loading.value = true;
   error.value = "";
   try {
@@ -24,7 +24,9 @@ async function check() {
   }
 }
 // Check health when page loads
-onMounted(check);
+onMounted(() => {
+  check();
+});
 </script>
 
 <template>

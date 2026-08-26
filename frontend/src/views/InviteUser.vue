@@ -9,13 +9,13 @@ const error = ref("");
 const success = ref("");
 
 // Handle API errors
-function extractError(err) {
+const extractError = (err) => {
   const detail = err.response?.data?.detail;
   if (Array.isArray(detail)) return detail.map((item) => item.msg || JSON.stringify(item)).join("; ");
   return typeof detail === "string" ? detail : err.message || "Unable to invite user.";
 }
 // Submit 
-async function submit() {
+const submit = async () => {
   error.value = "";
   success.value = "";
   loading.value = true;

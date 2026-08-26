@@ -36,7 +36,7 @@ const editForm = ref({
 const canManage = computed(() => auth.isLoggedIn);
 
 // feedback messages
-function clearFeedback() {
+const clearFeedback = () => {
   error.value = "";
   message.value = "";
 }
@@ -72,7 +72,7 @@ const selectFarm = (farm) => {
 }
 
 // Get all farms
-async function loadFarms(selectId = "") {
+const loadFarms = async (selectId = "") => {
   clearFeedback();
   loading.value = true;
   try {
@@ -101,7 +101,7 @@ async function loadFarms(selectId = "") {
 }
 
 // Get one farm by ID
-async function loadFarm(id = searchId.value) {
+const loadFarm = async (id = searchId.value) => {
   const farmId = id.trim();
   clearFeedback();
   if (!farmId) {
@@ -131,7 +131,7 @@ const openEdit = () => {
   showEdit.value = true;
 }
 // Update farm info
-async function saveFarm() {
+const saveFarm = async () => {
   if (!selectedFarm.value) return;
   clearFeedback();
   saving.value = true;
@@ -150,7 +150,7 @@ async function saveFarm() {
 }
 
 // Update farm status
-async function saveStatus() {
+const saveStatus = async () => {
   if (!selectedFarm.value) return;
   const status = statusValue.value.trim();
   if (!status) {
@@ -174,7 +174,7 @@ async function saveStatus() {
 }
 
 // Delete selected farm
-async function confirmDelete() {
+const confirmDelete = async () => {
   if (!selectedFarm.value) return;
   clearFeedback();
   deleting.value = true;
@@ -275,7 +275,7 @@ onMounted(() => {
         <!-- Selected farm details -->
         <section v-if="selectedFarm" class="card details-card">
           <div class="section-heading">
-            <div>
+            <div class="box-left">
               <span class="eyebrow">Farm details</span>
               <h2 class="card-title">{{ selectedFarm.name }}</h2>
               <p class="page-subtitle">{{ selectedFarm.region }}</p>
@@ -468,6 +468,7 @@ onMounted(() => {
   color: #26382c;
   font-size: 0.86rem;
   outline: none;
+  flex: 1;
 }
 
 .field-input:focus {
@@ -783,6 +784,15 @@ button:disabled {
 .confirm-card {
   width: min(460px, 100%);
 }
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+}
+
+
 
 /* Responsive */
 @media (max-width: 900px) {

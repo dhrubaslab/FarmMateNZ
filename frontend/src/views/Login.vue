@@ -74,7 +74,7 @@ async function handleLogin() {
           <h1 class="mt-5 text-3xl font-black tracking-tight text-slate-900 title-color">FarmMate NZ</h1>
           <p class="mt-1 text-sm text-slate-500">Sign in to your account</p>
 
-          <form class="mt-7 space-y-4" @submit.prevent="handleLogin">
+          <form class="mt-7 space-y-4 box-left" @submit.prevent="handleLogin">
             <div>
               <label class="field">
                 <span>Email</span>
