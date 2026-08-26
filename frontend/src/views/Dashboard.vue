@@ -91,7 +91,7 @@ onMounted(() => {
     <section class="mx-auto max-w-7xl">
       <div class="min-h-screen bg-gray-50">
         <div class="hero-panel">
-          <div>
+          <div class="box-left">
             <span class="hero-kicker">FarmMate NZ</span>
             <h1>FarmMate NZ</h1>
             <p>{{ auth.user?.email }} · {{ roleLabel }}</p>
@@ -165,6 +165,8 @@ onMounted(() => {
   color: #fff;
   box-shadow: 0 16px 40px rgba(39, 98, 53, 0.16);
 }
+
+
 
 .hero-panel .farm-btn {
   display: flex;

@@ -40,7 +40,7 @@ onMounted(load);
     <!-- Page header -->
     <section class="mx-auto max-w-4xl">
       <div class="mb-6 flex items-end justify-between gap-4">
-        <div>
+        <div class="box-left">
           <div class="eyebrow">Account</div>
           <h1 class="page-title">My Profile</h1>
           <p class="page-subtitle">View your account information.</p>

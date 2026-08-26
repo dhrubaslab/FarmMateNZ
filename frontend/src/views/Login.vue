@@ -71,7 +71,7 @@ async function handleLogin() {
       <section class="flex items-center p-7 sm:p-10">
         <div class="w-full max-w-sm mx-auto">
           <div class="brand-mark mobile">FM</div>
-          <h1 class="mt-5 text-3xl font-black tracking-tight text-slate-900">FarmMate NZ</h1>
+          <h1 class="mt-5 text-3xl font-black tracking-tight text-slate-900 title-color">FarmMate NZ</h1>
           <p class="mt-1 text-sm text-slate-500">Sign in to your account</p>
 
           <form class="mt-7 space-y-4" @submit.prevent="handleLogin">
@@ -115,6 +115,10 @@ async function handleLogin() {
   color: #1f5b34;
   font-weight: 900;
   box-shadow: 0 10px 25px rgba(27, 88, 48, .18)
+}
+
+.title-color {
+  color: #000 !important;
 }
 
 .brand-mark.mobile {

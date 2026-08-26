@@ -48,7 +48,7 @@ async function submit() {
 
       <!-- Invitation form -->
       <form class="card" @submit.prevent="submit">
-        <div class="grid gap-4 sm:grid-cols-2">
+        <div class="grid gap-4 sm:grid-cols-2 box-left">
           <label class="field-label">
             <span>Email</span>
             <input v-model="form.email" class="field-input" type="email" required placeholder="user@example.com" />

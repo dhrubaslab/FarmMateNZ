@@ -32,10 +32,10 @@ onMounted(check);
     <section class="mx-auto max-w-4xl">
       <!-- Page header -->
       <div class="mb-6 flex items-end justify-between gap-4">
-        <div>
+        <div class="box-left">
           <div class="eyebrow">Service status</div>
           <h1 class="page-title">System Health</h1>
-          <p class="page-subtitle">Check the backend service status.</p>
+          <p class="page-subtitle">It has been confirmed that it is human writting code~~</p>
         </div>
         <button class="secondary-button" @click="check">↻ Check Again</button>
       </div>

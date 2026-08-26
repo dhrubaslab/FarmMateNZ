@@ -343,3 +343,8 @@ code {
     border-right-color: var(--border);
   }
 }
+
+/* public left styles */
+.box-left {
+  text-align: left;
+}
