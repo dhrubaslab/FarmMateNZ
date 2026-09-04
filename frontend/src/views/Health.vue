@@ -9,7 +9,7 @@ const result = ref(null);
 const checkedAt = ref("");
 
 // Check backend health status
-async function check() {
+const check = async () => {
   loading.value = true;
   error.value = "";
   try {
@@ -24,7 +24,9 @@ async function check() {
   }
 }
 // Check health when page loads
-onMounted(check);
+onMounted(() => {
+  check();
+});
 </script>
 
 <template>
@@ -32,10 +34,10 @@ onMounted(check);
     <section class="mx-auto max-w-4xl">
       <!-- Page header -->
       <div class="mb-6 flex items-end justify-between gap-4">
-        <div>
+        <div class="box-left">
           <div class="eyebrow">Service status</div>
           <h1 class="page-title">System Health</h1>
-          <p class="page-subtitle">Check the backend service status.</p>
+          <p class="page-subtitle">It has been confirmed that it is human writting code~~</p>
         </div>
         <button class="secondary-button" @click="check">↻ Check Again</button>
       </div>

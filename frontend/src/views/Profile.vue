@@ -10,14 +10,14 @@ const error = ref("");
 const me = ref(null);
 
 // Control API errors
-function extractError(err) {
+const extractError = (err) => {
   const detail = err.response?.data?.detail;
   if (Array.isArray(detail)) return detail.map((item) => item.msg || JSON.stringify(item)).join("; ");
   return typeof detail === "string" ? detail : err.message || "Unable to load profile.";
 }
 
 // Load current user profile
-async function load() {
+const load = async () => {
   loading.value = true;
   error.value = "";
   try {
@@ -32,7 +32,9 @@ async function load() {
 }
 
 // Load profile when page opens
-onMounted(load);
+onMounted(() => {
+  load();
+});
 </script>
 
 <template>
@@ -40,7 +42,7 @@ onMounted(load);
     <!-- Page header -->
     <section class="mx-auto max-w-4xl">
       <div class="mb-6 flex items-end justify-between gap-4">
-        <div>
+        <div class="box-left">
           <div class="eyebrow">Account</div>
           <h1 class="page-title">My Profile</h1>
           <p class="page-subtitle">View your account information.</p>

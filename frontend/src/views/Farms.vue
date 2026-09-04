@@ -36,13 +36,14 @@ const editForm = ref({
 const canManage = computed(() => auth.isLoggedIn);
 
 // feedback messages
-function clearFeedback() {
+const clearFeedback = () => {
   error.value = "";
   message.value = "";
 }
 
 // Handle API errors
-function extractError(errorObject, fallback) {
+
+const extractError = (errorObject, fallback) => {
   const detail = errorObject?.response?.data?.detail;
   if (Array.isArray(detail)) {
     return detail.map((item) => item.msg || JSON.stringify(item)).join("; ");
@@ -56,7 +57,7 @@ function extractError(errorObject, fallback) {
   return errorObject?.message || fallback;
 }
 
-function normaliseFarmList(data) {
+const normaliseFarmList = (data) => {
 
   if (Array.isArray(data)) return data;
   if (data && Array.isArray(data.items)) return data.items;
@@ -64,14 +65,14 @@ function normaliseFarmList(data) {
   return data ? [data] : [];
 
 }
-function selectFarm(farm) {
+const selectFarm = (farm) => {
   selectedFarm.value = farm;
   searchId.value = farm.farm_id || "";
   statusValue.value = farm.status || "";
 }
 
 // Get all farms
-async function loadFarms(selectId = "") {
+const loadFarms = async (selectId = "") => {
   clearFeedback();
   loading.value = true;
   try {
@@ -100,7 +101,7 @@ async function loadFarms(selectId = "") {
 }
 
 // Get one farm by ID
-async function loadFarm(id = searchId.value) {
+const loadFarm = async (id = searchId.value) => {
   const farmId = id.trim();
   clearFeedback();
   if (!farmId) {
@@ -119,7 +120,7 @@ async function loadFarm(id = searchId.value) {
   }
 }
 // Open edit form
-function openEdit() {
+const openEdit = () => {
   if (!selectedFarm.value) return;
   clearFeedback();
   editForm.value = {
@@ -130,7 +131,7 @@ function openEdit() {
   showEdit.value = true;
 }
 // Update farm info
-async function saveFarm() {
+const saveFarm = async () => {
   if (!selectedFarm.value) return;
   clearFeedback();
   saving.value = true;
@@ -149,7 +150,7 @@ async function saveFarm() {
 }
 
 // Update farm status
-async function saveStatus() {
+const saveStatus = async () => {
   if (!selectedFarm.value) return;
   const status = statusValue.value.trim();
   if (!status) {
@@ -173,7 +174,7 @@ async function saveStatus() {
 }
 
 // Delete selected farm
-async function confirmDelete() {
+const confirmDelete = async () => {
   if (!selectedFarm.value) return;
   clearFeedback();
   deleting.value = true;
@@ -194,7 +195,7 @@ async function confirmDelete() {
 }
 
 // Go to Create Farm page
-function goCreate() {
+const goCreate = () => {
   router.push({ name: "create-farm" });
 }
 
@@ -210,10 +211,10 @@ onMounted(() => {
     <section class="mx-auto max-w-7xl">
       <!-- Page header -->
       <header class="page-header">
-        <div>
+        <div class="box-left">
           <span class="eyebrow">Farm management</span>
           <h1 class="page-title">Farms</h1>
-          <p class="page-subtitle">Manage your farm records and information.</p>
+          <p class="page-subtitle">It has been confirmed that it is human writting code~~</p>
         </div>
         <button v-if="canManage" class="primary-button" @click="goCreate">+ New Farm</button>
       </header>
@@ -222,7 +223,7 @@ onMounted(() => {
 
       <!-- Find farm -->
       <section class="lookup card">
-        <div>
+        <div class="box-left">
           <span class="eyebrow">Find a farm</span>
           <h2 class="card-title">Farm details</h2>
           <p class="page-subtitle">Search and view farm details.</p>
@@ -274,7 +275,7 @@ onMounted(() => {
         <!-- Selected farm details -->
         <section v-if="selectedFarm" class="card details-card">
           <div class="section-heading">
-            <div>
+            <div class="box-left">
               <span class="eyebrow">Farm details</span>
               <h2 class="card-title">{{ selectedFarm.name }}</h2>
               <p class="page-subtitle">{{ selectedFarm.region }}</p>
@@ -467,6 +468,7 @@ onMounted(() => {
   color: #26382c;
   font-size: 0.86rem;
   outline: none;
+  flex: 1;
 }
 
 .field-input:focus {
@@ -782,6 +784,15 @@ button:disabled {
 .confirm-card {
   width: min(460px, 100%);
 }
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+}
+
+
 
 /* Responsive */
 @media (max-width: 900px) {

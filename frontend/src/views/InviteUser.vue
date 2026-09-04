@@ -9,13 +9,13 @@ const error = ref("");
 const success = ref("");
 
 // Handle API errors
-function extractError(err) {
+const extractError = (err) => {
   const detail = err.response?.data?.detail;
   if (Array.isArray(detail)) return detail.map((item) => item.msg || JSON.stringify(item)).join("; ");
   return typeof detail === "string" ? detail : err.message || "Unable to invite user.";
 }
 // Submit 
-async function submit() {
+const submit = async () => {
   error.value = "";
   success.value = "";
   loading.value = true;
@@ -48,7 +48,7 @@ async function submit() {
 
       <!-- Invitation form -->
       <form class="card" @submit.prevent="submit">
-        <div class="grid gap-4 sm:grid-cols-2">
+        <div class="grid gap-4 sm:grid-cols-2 box-left">
           <label class="field-label">
             <span>Email</span>
             <input v-model="form.email" class="field-input" type="email" required placeholder="user@example.com" />
