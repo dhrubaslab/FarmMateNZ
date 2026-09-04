@@ -26,3 +26,13 @@ services:
     command: ["-jar", "DynamoDBLocal.jar", "-inMemory", "-sharedDb"]
     ports:
       - "8001:8000"
+      
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    container_name: farmmatenz-dynamodb-admin
+    ports:
+      - "8002:8001"
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+    depends_on:
+      - dynamodb-local
