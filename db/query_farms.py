@@ -2,7 +2,7 @@ import boto3
 
 table = boto3.resource(
     "dynamodb",
-    endpoint_url="http://localhost:8000",
+    endpoint_url="http://localhost:8001",
     region_name="ap-southeast-2",
     aws_access_key_id="local",
     aws_secret_access_key="local",

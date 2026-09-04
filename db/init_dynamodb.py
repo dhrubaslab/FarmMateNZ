@@ -3,6 +3,8 @@
 Placeholder schema: extend TABLES / SIMULATION_DATA further once the real
 data model is finalised.
 """
+from decimal import Decimal
+
 import boto3
 
 ENDPOINT_URL = "http://localhost:8001"
@@ -71,13 +73,23 @@ TABLES = [
         "AttributeDefinitions": [{"AttributeName": "user_id", "AttributeType": "S"}],
         "BillingMode": "PAY_PER_REQUEST",
     },
+    {
+        # Populated by the backend's weather sync (services/weather.py), not seeded here.
+        "TableName": "WeatherData",
+        "KeySchema": [{"AttributeName": "farm_id", "KeyType": "HASH"}],
+        "AttributeDefinitions": [{"AttributeName": "farm_id", "AttributeType": "S"}],
+        "BillingMode": "PAY_PER_REQUEST",
+    },
 ]
 
 SIMULATION_DATA = {
     "Farms": [
-        {"farm_id": "farm-001", "name": "Sunnyside Dairy", "region": "Waikato", "size_hectares": 120},
-        {"farm_id": "farm-002", "name": "Green Valley Farm", "region": "Canterbury", "size_hectares": 85},
-        {"farm_id": "farm-003", "name": "Coastal Pastures", "region": "Bay of Plenty", "size_hectares": 60},
+        {"farm_id": "farm-001", "name": "Sunnyside Dairy", "region": "Waikato", "size_hectares": 120,
+         "latitude": Decimal("-37.78"), "longitude": Decimal("175.28")},
+        {"farm_id": "farm-002", "name": "Green Valley Farm", "region": "Canterbury", "size_hectares": 85,
+         "latitude": Decimal("-43.53"), "longitude": Decimal("172.63")},
+        {"farm_id": "farm-003", "name": "Coastal Pastures", "region": "Bay of Plenty", "size_hectares": 60,
+         "latitude": Decimal("-37.69"), "longitude": Decimal("176.17")},
     ],
     "Paddocks": [
         {"farm_id": "farm-001", "paddock_id": "paddock-01", "name": "North Block", "area_hectares": 15, "stock_type": "dairy"},
