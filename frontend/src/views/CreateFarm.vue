@@ -5,7 +5,10 @@ const form = ref({
   name: "",
   region: NZ_REGIONS[0],
   size_hectares: "",
+  latitude: "",
+  longitude: "",
 });
+
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AppShell from "../components/AppShell.vue";
@@ -82,6 +85,15 @@ async function submit() {
           <label class="field-label full-field">
             Size (hectares)
             <input v-model.number="form.size_hectares" class="field-input" type="number" min="0" step="0.01" required />
+          </label>
+
+          <label class="field-label">
+            Latitude
+            <input v-model.number="form.latitude" class="field-input" type="number" step="0.0001" min="-90" max="90" placeholder="-37.78" />
+          </label>
+          <label class="field-label">
+            Longitude
+            <input v-model.number="form.longitude" class="field-input" type="number" step="0.0001" min="-180" max="180" placeholder="175.28" />
           </label>
         </div>
 

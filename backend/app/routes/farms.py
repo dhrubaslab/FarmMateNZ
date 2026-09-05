@@ -16,23 +16,25 @@ from app.services.permissions import Role, require_roles, get_current_user
 
 router = APIRouter(prefix="/farms", tags=["farms"])
 
-
 class FarmCreate(BaseModel):
     name: str
     region: str
     size_hectares: float
-
+    latitude: float | None = None
+    longitude: float | None = None
 
 class Farm(FarmCreate):
     farm_id: str
     status: str = "active"
 
-
 @router.post("", response_model=Farm, dependencies=[Depends(require_roles(Role.SUPER_ADMIN))])
 def create_farm(farm: FarmCreate):
     table = get_table(TABLE_FARMS)
     farm_id = f"farm-{uuid.uuid4().hex[:8]}"
-    item = to_dynamo_safe({"farm_id": farm_id, "status": "active", **farm.model_dump()})
+    item = {"farm_id": farm_id, "status": "active", **farm.model_dump()}
+    for field in ("size_hectares", "latitude", "longitude"):
+        if item.get(field) is not None:
+            item[field] = Decimal(str(item[field]))
     table.put_item(Item=item)
     return item
 
@@ -72,15 +74,18 @@ def update_farm(farm_id: str, farm: FarmCreate, current_user: dict = Depends(get
         raise HTTPException(status_code=403, detail="You can only edit your own farm")
 
     table = get_table(TABLE_FARMS)
+    update_values = {
+        ":n": farm.name,
+        ":r": farm.region,
+        ":s": Decimal(str(farm.size_hectares)),
+        ":lat": Decimal(str(farm.latitude)) if farm.latitude is not None else None,
+        ":lon": Decimal(str(farm.longitude)) if farm.longitude is not None else None,
+    }
     table.update_item(
         Key={"farm_id": farm_id},
-        UpdateExpression="SET #n = :n, #r = :r, size_hectares = :s",
+        UpdateExpression="SET #n = :n, #r = :r, size_hectares = :s, latitude = :lat, longitude = :lon",
         ExpressionAttributeNames={"#n": "name", "#r": "region"},
-        ExpressionAttributeValues={
-            ":n": farm.name,
-            ":r": farm.region,
-            ":s": Decimal(str(farm.size_hectares)),
-        },
+        ExpressionAttributeValues=update_values,
     )
     return {"farm_id": farm_id, "status": "active", **farm.model_dump()}
 
