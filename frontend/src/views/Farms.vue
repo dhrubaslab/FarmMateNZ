@@ -1,4 +1,14 @@
 <script setup>
+const editForm = ref({
+  name: "",
+  region: NZ_REGIONS[0],
+  size_hectares: "",
+  latitude: "",
+  longitude: "",
+});
+
+import { getWeather, syncWeather } from "../services/weather";
+
 import { NZ_REGIONS } from "../constants/regions";
 
 const FARM_STATUSES = ["active", "disabled"];
@@ -19,6 +29,10 @@ const router = useRouter();
 const route = useRoute();
 const auth = useAuthStore();
 
+const weather = ref(null);
+const weatherLoading = ref(false);
+const weatherError = ref("");
+const syncing = ref(false);
 
 const farms = ref([]);
 const selectedFarm = ref(null);
@@ -32,11 +46,7 @@ const searchId = ref(auth.user?.farm_id || "");
 const statusValue = ref("");
 const showEdit = ref(false);
 const showDelete = ref(false);
-const editForm = ref({
-  name: "",
-  region: NZ_REGIONS[0],
-  size_hectares: "",
-});
+
 const canManage = computed(() => auth.isLoggedIn);
 
 // feedback messages
@@ -69,11 +79,43 @@ const normaliseFarmList = (data) => {
   return data ? [data] : [];
 
 }
+
 const selectFarm = (farm) => {
   selectedFarm.value = farm;
   searchId.value = farm.farm_id || "";
   statusValue.value = farm.status || "";
-}
+  loadWeather(farm.farm_id);
+};
+
+const loadWeather = async (farmId) => {
+  weatherError.value = "";
+  weather.value = null;
+  weatherLoading.value = true;
+  try {
+    const response = await getWeather(farmId);
+    weather.value = response.data;
+  } catch (errorObject) {
+    weather.value = null;
+    weatherError.value = errorObject?.response?.status === 404
+      ? "No weather data yet for this farm."
+      : extractError(errorObject, "Unable to load weather");
+  } finally {
+    weatherLoading.value = false;
+  }
+};
+
+const syncWeatherNow = async () => {
+  if (!selectedFarm.value) return;
+  syncing.value = true;
+  try {
+    await syncWeather(selectedFarm.value.farm_id);
+    await loadWeather(selectedFarm.value.farm_id);
+  } catch (errorObject) {
+    weatherError.value = extractError(errorObject, "Unable to sync weather");
+  } finally {
+    syncing.value = false;
+  }
+};
 
 // Get all farms
 const loadFarms = async (selectId = "") => {
@@ -131,9 +173,12 @@ const openEdit = () => {
     name: selectedFarm.value.name ?? "",
     region: selectedFarm.value.region || NZ_REGIONS[0],
     size_hectares: selectedFarm.value.size_hectares ?? "",
+    latitude: selectedFarm.value.latitude ?? "",
+    longitude: selectedFarm.value.longitude ?? "",
   };
   showEdit.value = true;
 };
+
 // Update farm info
 const saveFarm = async () => {
   if (!selectedFarm.value) return;
@@ -288,12 +333,40 @@ onMounted(() => {
               {{ selectedFarm.status }}
             </span>
           </div>
+
           <div class="stats-grid">
             <div class="stat"><span>Farm ID</span><strong>{{ selectedFarm.farm_id }}</strong></div>
             <div class="stat"><span>Region</span><strong>{{ selectedFarm.region }}</strong></div>
             <div class="stat"><span>Size</span><strong>{{ selectedFarm.size_hectares }} ha</strong></div>
             <div class="stat"><span>Status</span><strong>{{ selectedFarm.status }}</strong></div>
+            <div class="stat" v-if="selectedFarm.latitude != null">
+              <span>Location</span>
+              <strong>{{ selectedFarm.latitude }}, {{ selectedFarm.longitude }}</strong>
+            </div>
           </div>
+
+          <!-- Weather -->
+          <section class="weather-block">
+            <div class="section-heading">
+              <div class="box-left">
+                <span class="eyebrow">Conditions</span>
+                <h3 class="card-title">Weather</h3>
+              </div>
+              <button v-if="canManage" class="icon-button" title="Sync weather now" :disabled="syncing" @click="syncWeatherNow">
+                {{ syncing ? "…" : "↻" }}
+              </button>
+            </div>
+
+            <div v-if="weatherLoading" class="empty-state small">Loading weather...</div>
+            <div v-else-if="weatherError" class="alert error">{{ weatherError }}</div>
+            <div v-else-if="weather" class="stats-grid">
+              <div class="stat"><span>Temperature</span><strong>{{ weather.temperature_celsius }}°C</strong></div>
+              <div class="stat"><span>Precipitation</span><strong>{{ weather.precipitation_mm }} mm</strong></div>
+              <div class="stat"><span>Region</span><strong>{{ weather.region }}</strong></div>
+              <div class="stat"><span>Last synced</span><strong>{{ new Date(weather.recorded_at).toLocaleString() }}</strong></div>
+            </div>
+          </section>
+
           <div v-if="canManage" class="action-stack">
             <button class="primary-button full" @click="openEdit">Edit Farm</button>
             <div class="status-control">
@@ -343,6 +416,14 @@ onMounted(() => {
               Size (hectares)
               <input v-model.number="editForm.size_hectares" class="field-input" type="number" min="0" step="0.01"
                 required />
+            </label>
+            <label class="field-label">
+              Latitude
+              <input v-model.number="editForm.latitude" class="field-input" type="number" step="0.0001" min="-90" max="90" />
+            </label>
+            <label class="field-label">
+              Longitude
+              <input v-model.number="editForm.longitude" class="field-input" type="number" step="0.0001" min="-180" max="180" />
             </label>
           </div>
           <div class="modal-actions">
@@ -689,6 +770,17 @@ button:disabled {
   border-radius: 14px;
   background: #f6faf5;
   padding: 0.85rem;
+}
+
+.weather-block {
+  margin-top: 1.25rem;
+  border-top: 1px solid #eef4ed;
+  padding-top: 1.1rem;
+}
+
+.empty-state.small {
+  min-height: auto;
+  padding: 1rem;
 }
 
 .stat span,
