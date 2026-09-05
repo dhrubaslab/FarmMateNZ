@@ -13,12 +13,18 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.services.dynamo import get_table, TABLE_FARMS, TABLE_WEATHER
 from app.services.weather import fetch_current_weather
 from app.services.permissions import Role, require_same_farm_or_super_admin
+from app.services.alerts import set_alert_state
+
+
 
 router = APIRouter(prefix="/weather", tags=["weather"])
 
 
+
+
+
 def sync_farm_weather(farm_id: str) -> dict:
-    """Fetches live weather for a farm and stores it."""
+    """Fetches live weather for a farm, stores it, and updates alert states."""
     farm = get_table(TABLE_FARMS).get_item(Key={"farm_id": farm_id}).get("Item")
     if not farm:
         raise HTTPException(status_code=404, detail="Farm not found")
@@ -26,6 +32,21 @@ def sync_farm_weather(farm_id: str) -> dict:
     weather = fetch_current_weather(farm["latitude"], farm["longitude"])
 
     get_table(TABLE_WEATHER).put_item(Item={"farm_id": farm_id, "region": farm["region"], **weather})
+
+    # Update alert states based on the freshly-fetched conditions
+    temperature_celsius = weather["temperature_celsius"]
+    precipitation_mm = weather["precipitation_mm"]
+
+    if temperature_celsius <= 2:
+        set_alert_state(farm_id, "frost", active=True, message=f"Frost risk: {temperature_celsius}°C")
+    else:
+        set_alert_state(farm_id, "frost", active=False)
+
+    if precipitation_mm >= 25:
+        set_alert_state(farm_id, "heavy_rain", active=True, message=f"Heavy rain forecast: {precipitation_mm}mm")
+    else:
+        set_alert_state(farm_id, "heavy_rain", active=False)
+
     return weather
 
 
