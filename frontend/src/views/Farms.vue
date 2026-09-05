@@ -1,4 +1,8 @@
 <script setup>
+import { NZ_REGIONS } from "../constants/regions";
+
+const FARM_STATUSES = ["active", "disabled"];
+
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AppShell from "../components/AppShell.vue";
@@ -30,7 +34,7 @@ const showEdit = ref(false);
 const showDelete = ref(false);
 const editForm = ref({
   name: "",
-  region: "",
+  region: NZ_REGIONS[0],
   size_hectares: "",
 });
 const canManage = computed(() => auth.isLoggedIn);
@@ -125,11 +129,11 @@ const openEdit = () => {
   clearFeedback();
   editForm.value = {
     name: selectedFarm.value.name ?? "",
-    region: selectedFarm.value.region ?? "",
+    region: selectedFarm.value.region || NZ_REGIONS[0],
     size_hectares: selectedFarm.value.size_hectares ?? "",
   };
   showEdit.value = true;
-}
+};
 // Update farm info
 const saveFarm = async () => {
   if (!selectedFarm.value) return;
@@ -295,7 +299,9 @@ onMounted(() => {
             <div class="status-control">
               <label class="field-label" for="farm-status">Status</label>
               <div class="status-row">
-                <input id="farm-status" v-model="statusValue" class="field-input" placeholder="active" />
+                <select id="farm-status" v-model="statusValue" class="field-input">
+                  <option v-for="s in FARM_STATUSES" :key="s" :value="s">{{ s }}</option>
+                </select>
                 <button class="secondary-button" :disabled="saving" @click="saveStatus">
                   {{ saving ? "Saving..." : "Update Status" }}
                 </button>
@@ -327,8 +333,12 @@ onMounted(() => {
           </div>
           <div class="form-grid">
             <label class="field-label">Name<input v-model.trim="editForm.name" class="field-input" required /></label>
-            <label class="field-label">Region<input v-model.trim="editForm.region" class="field-input"
-                required /></label>
+            <label class="field-label">
+              Region
+              <select v-model="editForm.region" class="field-input" required>
+                <option v-for="r in NZ_REGIONS" :key="r" :value="r">{{ r }}</option>
+              </select>
+            </label>
             <label class="field-label full-field">
               Size (hectares)
               <input v-model.number="editForm.size_hectares" class="field-input" type="number" min="0" step="0.01"
