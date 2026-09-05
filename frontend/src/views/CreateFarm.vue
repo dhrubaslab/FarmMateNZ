@@ -1,4 +1,11 @@
 <script setup>
+import { NZ_REGIONS } from "../constants/regions";
+
+const form = ref({
+  name: "",
+  region: NZ_REGIONS[0],
+  size_hectares: "",
+});
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import AppShell from "../components/AppShell.vue";
@@ -7,12 +14,6 @@ import { createFarm } from "../services/farms";
 const router = useRouter();
 const loading = ref(false);
 const error = ref("");
-
-const form = ref({
-  name: "",
-  region: "",
-  size_hectares: "",
-});
 
 function extractError(errorObject) {
   const detail = errorObject?.response?.data?.detail;
@@ -74,7 +75,9 @@ async function submit() {
           </label>
           <label class="field-label">
             Region
-            <input v-model.trim="form.region" class="field-input" required maxlength="200" />
+            <select v-model="form.region" class="field-input" required>
+              <option v-for="r in NZ_REGIONS" :key="r" :value="r">{{ r }}</option>
+            </select>
           </label>
           <label class="field-label full-field">
             Size (hectares)

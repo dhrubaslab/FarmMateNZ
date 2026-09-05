@@ -10,7 +10,7 @@ Access rules:
 import uuid
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-
+from decimal import Decimal
 from app.services.dynamo import get_table, TABLE_FARMS
 from app.services.permissions import Role, require_roles, get_current_user
 
@@ -32,7 +32,7 @@ class Farm(FarmCreate):
 def create_farm(farm: FarmCreate):
     table = get_table(TABLE_FARMS)
     farm_id = f"farm-{uuid.uuid4().hex[:8]}"
-    item = {"farm_id": farm_id, "status": "active", **farm.model_dump()}
+    item = to_dynamo_safe({"farm_id": farm_id, "status": "active", **farm.model_dump()})
     table.put_item(Item=item)
     return item
 
@@ -66,7 +66,6 @@ def list_farms(current_user: dict = Depends(get_current_user)):
 
 @router.patch("/{farm_id}", response_model=Farm)
 def update_farm(farm_id: str, farm: FarmCreate, current_user: dict = Depends(get_current_user)):
-    # super-admin can edit any farm; admin can edit only their own; staff cannot edit
     if current_user["role"] == Role.STAFF.value:
         raise HTTPException(status_code=403, detail="Staff cannot edit farm profiles")
     if current_user["role"] == Role.ADMIN.value and current_user.get("farm_id") != farm_id:
@@ -75,9 +74,13 @@ def update_farm(farm_id: str, farm: FarmCreate, current_user: dict = Depends(get
     table = get_table(TABLE_FARMS)
     table.update_item(
         Key={"farm_id": farm_id},
-        UpdateExpression="SET #n = :n, region = :r, size_hectares = :s",
-        ExpressionAttributeNames={"#n": "name"},
-        ExpressionAttributeValues={":n": farm.name, ":r": farm.region, ":s": farm.size_hectares},
+        UpdateExpression="SET #n = :n, #r = :r, size_hectares = :s",
+        ExpressionAttributeNames={"#n": "name", "#r": "region"},
+        ExpressionAttributeValues={
+            ":n": farm.name,
+            ":r": farm.region,
+            ":s": Decimal(str(farm.size_hectares)),
+        },
     )
     return {"farm_id": farm_id, "status": "active", **farm.model_dump()}
 
@@ -101,3 +104,6 @@ def delete_farm(farm_id: str):
     table = get_table(TABLE_FARMS)
     table.delete_item(Key={"farm_id": farm_id})
     return {"message": "Farm deleted"}
+
+def to_dynamo_safe(data: dict) -> dict:
+    return {k: (Decimal(str(v)) if isinstance(v, float) else v) for k, v in data.items()}

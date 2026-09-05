@@ -12,6 +12,7 @@ Toggle is controlled by the DYNAMODB_ENDPOINT_URL env var:
 
 import os
 import boto3
+from decimal import Decimal
 
 AWS_REGION = os.getenv("AWS_REGION", "ap-southeast-2")  # Sydney, closest AWS region to NZ
 # Container-to-container URL (used when the FastAPI app itself runs inside Docker Compose).
@@ -52,3 +53,6 @@ def get_table(table_name: str):
     """Convenience helper: get a specific table resource."""
     dynamodb = get_dynamo_resource()
     return dynamodb.Table(table_name)
+
+def to_decimal(value: float) -> Decimal:
+    return Decimal(str(value))
