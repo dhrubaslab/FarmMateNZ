@@ -7,6 +7,8 @@ const editForm = ref({
   longitude: "",
 });
 
+import { listAlerts, acknowledgeAlert } from "../services/alerts";
+
 import { getWeather, syncWeather } from "../services/weather";
 
 import { NZ_REGIONS } from "../constants/regions";
@@ -33,6 +35,9 @@ const weather = ref(null);
 const weatherLoading = ref(false);
 const weatherError = ref("");
 const syncing = ref(false);
+const alerts = ref([]);
+const alertsLoading = ref(false);
+const acknowledging = ref("");
 
 const farms = ref([]);
 const selectedFarm = ref(null);
@@ -85,6 +90,7 @@ const selectFarm = (farm) => {
   searchId.value = farm.farm_id || "";
   statusValue.value = farm.status || "";
   loadWeather(farm.farm_id);
+  loadAlerts(farm.farm_id);
 };
 
 const loadWeather = async (farmId) => {
@@ -116,6 +122,34 @@ const syncWeatherNow = async () => {
     syncing.value = false;
   }
 };
+
+const loadAlerts = async (farmId) => {
+  alertsLoading.value = true;
+  try {
+    const response = await listAlerts(farmId);
+    alerts.value = response.data;
+  } catch (errorObject) {
+    alerts.value = [];
+  } finally {
+    alertsLoading.value = false;
+  }
+};
+
+const acknowledge = async (alertType) => {
+  if (!selectedFarm.value) return;
+  acknowledging.value = alertType;
+  try {
+    await acknowledgeAlert(selectedFarm.value.farm_id, alertType);
+    await loadAlerts(selectedFarm.value.farm_id);
+  } catch (errorObject) {
+    error.value = extractError(errorObject, "Unable to acknowledge alert");
+  } finally {
+    acknowledging.value = "";
+  }
+};
+
+const alertLabel = (type) =>
+  ({ frost: "Frost Risk", heavy_rain: "Heavy Rain", low_soil_moisture: "Low Soil Moisture" }[type] || type);
 
 // Get all farms
 const loadFarms = async (selectId = "") => {
@@ -267,6 +301,26 @@ onMounted(() => {
         </div>
         <button v-if="canManage" class="primary-button" @click="goCreate">+ New Farm</button>
       </header>
+
+      <!-- Active alerts banner (moved to top) -->
+      <div v-if="alerts.some(a => a.active)" class="alert-banner top-banner">
+        <div v-for="a in alerts.filter(x => x.active)" :key="a.alert_type" class="alert-banner-row">
+          <span class="alert-dot"></span>
+          <div class="alert-banner-text">
+            <strong>{{ alertLabel(a.alert_type) }}</strong>
+            <span>{{ a.message }}</span>
+          </div>
+          <button
+            v-if="canManage"
+            class="secondary-button"
+            :disabled="acknowledging === a.alert_type || a.acknowledged"
+            @click="acknowledge(a.alert_type)"
+          >
+            {{ a.acknowledged ? "Acknowledged" : (acknowledging === a.alert_type ? "..." : "Acknowledge") }}
+          </button>
+        </div>
+      </div>
+
       <div v-if="error" class="alert error">{{ error }}</div>
       <div v-if="message" class="alert success">{{ message }}</div>
 
@@ -642,6 +696,11 @@ button:disabled {
   color: #2e6e3e;
 }
 
+.alert-banner.top-banner {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+}
+
 /* Farm list */
 .farm-layout {
   display: grid;
@@ -778,6 +837,7 @@ button:disabled {
   padding-top: 1.1rem;
 }
 
+
 .empty-state.small {
   min-height: auto;
   padding: 1rem;
@@ -894,7 +954,45 @@ button:disabled {
 
 }
 
+.alert-banner {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
 
+.alert-banner-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #f3d9d5;
+  border-radius: 14px;
+  background: #fff6f5;
+  padding: 0.75rem 0.9rem;
+}
+
+.alert-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #d9534f;
+  flex-shrink: 0;
+}
+
+.alert-banner-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-banner-text strong {
+  color: #8a3b36;
+  font-size: 0.84rem;
+}
+
+.alert-banner-text span {
+  color: #a15c57;
+  font-size: 0.78rem;
+}
 
 /* Responsive */
 @media (max-width: 900px) {
