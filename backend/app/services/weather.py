@@ -9,6 +9,7 @@ import json
 import urllib.request
 from datetime import datetime, timezone
 from decimal import Decimal
+from app.services.alerts import set_alert_state
 
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 

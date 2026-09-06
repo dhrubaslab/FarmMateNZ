@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import farms, auth, weather
 from app.services.dynamo import get_table, TABLE_FARMS
+from app.routes import alerts as alerts_routes
+
 
 # How often the background job refreshes weather for every farm. Overridable
 # via env var so it can be set low for a quick local demo instead of waiting
@@ -49,7 +51,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(farms.router)
 app.include_router(weather.router)
-
+app.include_router(alerts_routes.router)
 
 @app.get("/health")
 def health():
