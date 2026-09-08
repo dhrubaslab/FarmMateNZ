@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 
@@ -12,10 +12,15 @@ const mobileOpen = ref(false);
 const links = [
   { name: "dashboard", label: "Dashboard", icon: "grid" },
   { name: "farms", label: "Farm", icon: "farm" },
+  { name: "users", label: "Users", icon: "user", roles: ["super-admin", "admin"] },
   { name: "invite", label: "Invite User", icon: "user" },
   { name: "profile", label: "My Profile", icon: "profile" },
   { name: "health", label: "System Health", icon: "health" },
 ];
+
+const visibleLinks = computed(() =>
+  links.filter((link) => !link.roles || link.roles.includes(auth.role))
+);
 
 // Arrow functions
 const navigate = (name) => {
@@ -54,7 +59,7 @@ function initials() {
       </div>
       <nav class="flex-1 space-y-1 px-3">
         <!-- Click the button menu -->
-        <button v-for="link in links" :key="link.name" class="nav-item"
+        <button v-for="link in visibleLinks" :key="link.name" class="nav-item"
           :class="route.name === link.name ? 'nav-item-active' : ''" @click="navigate(link.name)">
           <!-- Nav icon -->
           <span class="nav-icon" aria-hidden="true">
@@ -142,7 +147,7 @@ function initials() {
         </div>
 
         <nav v-if="mobileOpen" class="mt-3 grid gap-1 border-t border-green-100 pt-3">
-          <button v-for="link in links" :key="link.name" class="mobile-nav-item"
+          <button v-for="link in visibleLinks" :key="link.name" class="mobile-nav-item"
             :class="route.name === link.name ? 'active' : ''" @click="navigate(link.name)">
             {{ link.label }}
           </button>
