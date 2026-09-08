@@ -104,6 +104,11 @@ onMounted(() => {
         </div>
         <!-- Go to different pages - farms / CreateFarm(/farms/new) / invite -->
         <div class="dashboard-actions">
+          <button v-if="['super-admin', 'admin'].includes(auth.role)" class="action-card" @click="goTo('/users')">
+            <strong>Users</strong>
+            <span>View and manage user accounts</span>
+          </button>
+
           <button class="action-card" @click="goTo('/farms')">
             <strong>Farm Management</strong>
             <span>View, edit & manage farm records</span>

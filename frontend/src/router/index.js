@@ -3,6 +3,7 @@ import { useAuthStore } from "../stores/auth";
 
 import Login from "../views/Login.vue";
 import Dashboard from "../views/Dashboard.vue";
+import UsersView from "../views/UsersView.vue";
 
 // New one- added pages during the holidays
 import Farms from "../views/Farms.vue";
@@ -32,6 +33,7 @@ const routes = [
   { path: "/reset-password", name: "reset-password", component: ResetPassword, meta: { requiresAuth: true } },
   { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true } },
   { path: "/health", name: "health", component: Health, meta: { requiresAuth: true } },
+  { path: "/users", name: "users", component: UsersView, meta: { requiresAuth: true, roles: ['super-admin', 'admin'] } },
   { path: "/:pathMatch(.*)*", redirect: "/dashboard" },
 ];
 

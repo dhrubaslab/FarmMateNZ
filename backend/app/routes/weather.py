@@ -37,7 +37,7 @@ def sync_farm_weather(farm_id: str) -> dict:
     temperature_celsius = weather["temperature_celsius"]
     precipitation_mm = weather["precipitation_mm"]
 
-    if temperature_celsius <= 10:
+    if temperature_celsius <= 20:
         set_alert_state(farm_id, "frost", active=True, message=f"Frost risk: {temperature_celsius}°C")
     else:
         set_alert_state(farm_id, "frost", active=False)
