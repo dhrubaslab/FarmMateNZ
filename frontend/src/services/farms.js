@@ -17,6 +17,8 @@ export const updateFarm = (farmId, data) =>
     name: data.name,
     region: data.region,
     size_hectares: Number(data.size_hectares),
+    latitude: data.latitude === "" || data.latitude == null ? null : Number(data.latitude),
+    longitude: data.longitude === "" || data.longitude == null ? null : Number(data.longitude),
   });
   
 export const deleteFarm = (farmId) =>

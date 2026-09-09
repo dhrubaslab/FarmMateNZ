@@ -15,7 +15,7 @@ import { NZ_REGIONS } from "../constants/regions";
 
 const FARM_STATUSES = ["active", "disabled"];
 
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AppShell from "../components/AppShell.vue";
 import { useAuthStore } from "../stores/auth";
@@ -52,7 +52,43 @@ const statusValue = ref("");
 const showEdit = ref(false);
 const showDelete = ref(false);
 
+// Pagination
+const currentPage = ref(1);
+const pageSize = 20;
+
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(farms.value.length / pageSize))
+);
+
+const paginatedFarms = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  return farms.value.slice(start, start + pageSize);
+});
+
+const goToPage = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
+};
+
+// Keep currentPage in range if the farm list shrinks (e.g. after a delete)
+watch(totalPages, (pages) => {
+  if (currentPage.value > pages) currentPage.value = pages;
+});
+
 const canManage = computed(() => auth.isLoggedIn);
+
+// Small embeddable map preview for the selected farm, using OpenStreetMap's
+// own official embed (same iframe their "Share" button generates) instead of
+// a third-party static-map mirror, which turned out to be unreliable.
+const mapEmbedUrl = computed(() => {
+  const farm = selectedFarm.value;
+  if (!farm || farm.latitude == null || farm.longitude == null) return "";
+  const lat = Number(farm.latitude);
+  const lon = Number(farm.longitude);
+  const delta = 0.01; // small bounding box around the marker
+  const bbox = [lon - delta, lat - delta, lon + delta, lat + delta].join(",");
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+});
 
 // feedback messages
 const clearFeedback = () => {
@@ -158,6 +194,7 @@ const loadFarms = async (selectId = "") => {
   try {
     const response = await listFarms();
     farms.value = normaliseFarmList(response.data);
+    currentPage.value = 1;
 
     const preferredId = selectId || selectedFarm.value?.farm_id || auth.user?.farm_id;
     const preferred = farms.value.find((item) => item.farm_id === preferredId);
@@ -359,20 +396,53 @@ onMounted(() => {
             <span>Create a farm to add the first record.</span>
           </div>
 
-          <div v-else class="farm-list">
-            <button v-for="item in farms" :key="item.farm_id" class="farm-row"
-              :class="selectedFarm?.farm_id === item.farm_id ? 'selected' : ''" @click="selectFarm(item)">
-              <span class="farm-icon">⌂</span>
-              <span class="farm-row-main">
-                <strong>{{ item.name }}</strong>
-                <small>{{ item.region }}</small>
+          <template v-else>
+            <div class="overflow-x-auto rounded-lg border border-stone-200">
+              <table class="w-full text-left text-sm">
+                <thead>
+                  <tr class="border-b border-stone-200 bg-stone-50 text-stone-500">
+                    <th class="px-3 py-2 font-medium">Name</th>
+                    <th class="px-3 py-2 font-medium">Region</th>
+                    <th class="px-3 py-2 text-right font-medium">Size (Ha)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="item in paginatedFarms"
+                    :key="item.farm_id"
+                    @click="selectFarm(item)"
+                    class="cursor-pointer border-b border-stone-100 last:border-0 hover:bg-stone-50"
+                    :class="selectedFarm?.farm_id === item.farm_id ? 'bg-emerald-50' : ''"
+                  >
+                    <td class="px-3 py-2 font-medium text-stone-900">{{ item.name }}</td>
+                    <td class="px-3 py-2 text-stone-600">{{ item.region }}</td>
+                    <td class="px-3 py-2 text-right text-stone-600">{{ item.size_hectares ?? '—' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <div v-if="totalPages > 1" class="pagination">
+              <button
+                class="icon-button"
+                :disabled="currentPage === 1"
+                @click="goToPage(currentPage - 1)"
+              >
+                ‹
+              </button>
+              <span class="pagination-label">
+                Page {{ currentPage }} of {{ totalPages }}
               </span>
-              <span class="farm-size">{{ item.size_hectares }} ha</span>
-              <span class="status" :class="item.status === 'active' ? 'status-active' : 'status-other'">
-                {{ item.status }}
-              </span>
-            </button>
-          </div>
+              <button
+                class="icon-button"
+                :disabled="currentPage === totalPages"
+                @click="goToPage(currentPage + 1)"
+              >
+                ›
+              </button>
+            </div>
+          </template>
         </section>
 
         <!-- Selected farm details -->
@@ -389,14 +459,32 @@ onMounted(() => {
           </div>
 
           <div class="stats-grid">
+            <!--
             <div class="stat"><span>Farm ID</span><strong>{{ selectedFarm.farm_id }}</strong></div>
             <div class="stat"><span>Region</span><strong>{{ selectedFarm.region }}</strong></div>
             <div class="stat"><span>Size</span><strong>{{ selectedFarm.size_hectares }} ha</strong></div>
             <div class="stat"><span>Status</span><strong>{{ selectedFarm.status }}</strong></div>
+          -->
             <div class="stat" v-if="selectedFarm.latitude != null">
               <span>Location</span>
               <strong>{{ selectedFarm.latitude }}, {{ selectedFarm.longitude }}</strong>
             </div>
+            <a
+              v-if="selectedFarm.latitude != null"
+              :href="`https://www.google.com/maps?q=${selectedFarm.latitude},${selectedFarm.longitude}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="map-thumb"
+              title="Open in Google Maps"
+            >
+              <iframe
+                :src="mapEmbedUrl"
+                class="map-thumb-img"
+                loading="lazy"
+                title="Map preview of farm location"
+              ></iframe>
+              <span class="map-thumb-label">View on map ↗</span>
+            </a>
           </div>
 
           <!-- Weather -->
@@ -578,12 +666,26 @@ onMounted(() => {
 }
 
 
+/* Find-a-farm: compressed height */
 .lookup {
   display: grid;
-  grid-template-columns: 1fr minmax(280px, 460px);
-  align-items: end;
+  grid-template-columns: 1fr minmax(260px, 400px);
+  align-items: center;
   gap: 1.5rem;
   margin-bottom: 1.25rem;
+  padding: 0.75rem 1.25rem;
+}
+
+.lookup .eyebrow {
+  margin-bottom: 0.2rem;
+}
+
+.lookup .card-title {
+  font-size: 0.94rem;
+}
+
+.lookup .page-subtitle {
+  display: none;
 }
 
 .lookup-form,
@@ -594,6 +696,14 @@ onMounted(() => {
 
 .lookup-form {
   grid-template-columns: 1fr auto;
+}
+
+.lookup .field-input {
+  padding: 0.5rem 0.7rem;
+}
+
+.lookup .secondary-button {
+  padding: 0.5rem 0.85rem;
 }
 
 .field-label {
@@ -734,73 +844,37 @@ button:disabled {
   font-size: 1rem;
 }
 
-.farm-list {
-  display: grid;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.farm-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  border: 1px solid transparent;
-  border-radius: 14px;
-  background: #fff;
-  padding: 0.75rem;
-  text-align: left;
-}
-
-.farm-row:hover,
-.farm-row.selected {
-  border-color: #cde4ca;
-  background: #f4faf2;
-}
-
-.farm-icon,
 .empty-icon {
   display: grid;
   place-items: center;
-  border-radius: 11px;
+  border-radius: 9px;
   background: #edf7eb;
   color: #2d7441;
 }
 
-.farm-icon {
-  width: 34px;
-  height: 34px;
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eef4ed;
 }
 
-.farm-row-main {
-  min-width: 0;
-}
-
-.farm-row-main strong,
-.farm-row-main small {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.farm-row-main strong {
-  color: #27382d;
-  font-size: 0.84rem;
-}
-
-.farm-row-main small,
-.farm-size {
-  color: #7a877f;
-  font-size: 0.73rem;
+.pagination-label {
+  color: #58685d;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 /* Farm status */
 .status {
-  padding: 0.38rem 0.58rem;
+  padding: 0.32rem 0.5rem;
   text-transform: capitalize;
 }
+
 
 .status-active {
   background: #e6f5e5;
@@ -817,24 +891,25 @@ button:disabled {
   min-width: 0;
 }
 
+/* Compressed stats grid */
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
-  margin: 1.25rem 0;
+  gap: 0.4rem;
+  margin: 0.85rem 0;
 }
 
 .stat {
   min-width: 0;
-  border-radius: 14px;
+  border-radius: 10px;
   background: #f6faf5;
-  padding: 0.85rem;
+  padding: 0.5rem 0.6rem;
 }
 
 .weather-block {
-  margin-top: 1.25rem;
+  margin-top: 1rem;
   border-top: 1px solid #eef4ed;
-  padding-top: 1.1rem;
+  padding-top: 0.85rem;
 }
 
 
@@ -850,14 +925,51 @@ button:disabled {
 
 .stat span {
   color: #77837b;
-  font-size: 0.7rem;
+  font-size: 0.63rem;
 }
 
 .stat strong {
-  margin-top: 0.25rem;
+  margin-top: 0.1rem;
   color: #284c32;
-  font-size: 0.84rem;
+  font-size: 0.76rem;
   overflow-wrap: anywhere;
+}
+
+.map-thumb {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f6faf5;
+  text-decoration: none;
+  height: 96px;
+}
+
+.map-thumb-img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.map-thumb-label {
+  position: absolute;
+  right: 0.4rem;
+  bottom: 0.4rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.2rem 0.5rem;
+  color: #2d7441;
+  font-size: 0.63rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.map-thumb:hover .map-thumb-label {
+  background: #fff;
 }
 
 .action-stack {
@@ -1020,14 +1132,6 @@ button:disabled {
 
   .full-field {
     grid-column: auto;
-  }
-
-  .farm-row {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
-  .farm-size {
-    display: none;
   }
 
   .status-row {
