@@ -76,6 +76,7 @@ watch(totalPages, (pages) => {
 });
 
 const canManage = computed(() => auth.isLoggedIn);
+const isSuperAdmin = computed(() => auth.role === "super-admin");
 
 // Small embeddable map preview for the selected farm, using OpenStreetMap's
 // own official embed (same iframe their "Share" button generates) instead of
@@ -334,9 +335,9 @@ onMounted(() => {
         <div class="box-left">
           <span class="eyebrow">Farm management</span>
           <h1 class="page-title">Farms</h1>
-          <p class="page-subtitle">It has been confirmed that it is human writting code~~</p>
+          <p class="page-subtitle">Manage every farm's profile, location, and live conditions in one place.</p>
         </div>
-        <button v-if="canManage" class="primary-button" @click="goCreate">+ New Farm</button>
+        <button v-if="isSuperAdmin" class="primary-button" @click="goCreate">+ New Farm</button>
       </header>
 
       <!-- Active alerts banner (moved to top) -->

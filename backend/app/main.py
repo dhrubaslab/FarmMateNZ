@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import farms, auth, weather, users
+from app.routes import farms, auth, weather, users, paddocks
 from app.services.dynamo import get_table, TABLE_FARMS
 from app.routes import alerts as alerts_routes
 
@@ -53,6 +53,7 @@ app.include_router(farms.router)
 app.include_router(weather.router)
 app.include_router(alerts_routes.router)
 app.include_router(users.router)
+app.include_router(paddocks.router)
 
 @app.get("/health")
 def health():
