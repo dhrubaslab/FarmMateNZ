@@ -83,6 +83,7 @@ onMounted(() => {
   loadDashboard()
 })
 
+const isSuperAdmin = computed(() => auth.role === "super-admin");
 
 </script>
 
@@ -114,7 +115,7 @@ onMounted(() => {
             <span>View, edit & manage farm records</span>
           </button>
 
-          <button v-if="auth.isLoggedIn" class="action-card" @click="goTo('/farms/new')">
+          <button v-if="isSuperAdmin" class="action-card" @click="goTo('/farms/new')">
             <strong>Create Farm</strong>
             <span>Add a new farm through the Farm API</span>
           </button>

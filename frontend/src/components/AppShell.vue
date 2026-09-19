@@ -12,6 +12,7 @@ const mobileOpen = ref(false);
 const links = [
   { name: "dashboard", label: "Dashboard", icon: "grid" },
   { name: "farms", label: "Farm", icon: "farm" },
+  { name: "paddocks", label: "Paddocks", icon: "map", roles: ['super-admin', "admin", "staff"] },
   { name: "users", label: "Users", icon: "user", roles: ["super-admin", "admin"] },
   { name: "invite", label: "Invite User", icon: "user" },
   { name: "profile", label: "My Profile", icon: "profile" },
