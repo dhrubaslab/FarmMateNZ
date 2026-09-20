@@ -1,12 +1,5 @@
-"""
-Auth service — password hashing and JWT handling.
-
-JWT secret is read from an env var. In production this should come from
-AWS Secrets Manager (already in the project's service list) rather than
-being hardcoded; for local dev, a plain env var with a default is fine.
-"""
-
 import os
+import boto3
 from datetime import datetime, timedelta, timezone
 
 from jose import jwt, JWTError
@@ -30,7 +23,7 @@ def get_jwt_secret() -> str:
     # Local development fallback
     return os.getenv("JWT_SECRET", "local-dev-secret-change-in-production")
 
-#JWT_SECRET = os.getenv("JWT_SECRET", "local-dev-secret-change-in-production")
+JWT_SECRET = get_jwt_secret()
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8  # 8 hour session
 
