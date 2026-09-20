@@ -12,7 +12,25 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-JWT_SECRET = os.getenv("JWT_SECRET", "local-dev-secret-change-in-production")
+def get_jwt_secret() -> str:
+    secret_name = os.getenv("JWT_SECRET_NAME")
+
+    if secret_name:
+        client = boto3.client(
+            "secretsmanager",
+            region_name=os.getenv("AWS_REGION", "us-east-1")
+        )
+
+        response = client.get_secret_value(
+            SecretId=secret_name
+        )
+
+        return response["SecretString"]
+
+    # Local development fallback
+    return os.getenv("JWT_SECRET", "local-dev-secret-change-in-production")
+
+#JWT_SECRET = os.getenv("JWT_SECRET", "local-dev-secret-change-in-production")
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8  # 8 hour session
 

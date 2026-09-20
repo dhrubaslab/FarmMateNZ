@@ -6,7 +6,7 @@ import os
 import boto3
 
 SNS_TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN")
-AWS_REGION = os.environ.get("AWS_REGION", "ap-southeast-2")
+AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 _sns_client = boto3.client("sns", region_name=AWS_REGION)
 

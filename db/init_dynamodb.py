@@ -8,7 +8,7 @@ from decimal import Decimal
 import boto3
 
 ENDPOINT_URL = "http://localhost:8001"
-REGION = "ap-southeast-2"
+REGION = "us-east-1"
 
 TABLES = [
     {
