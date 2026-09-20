@@ -7,14 +7,9 @@ services:
     volumes:
       - ../backend:/app
     environment:
-      - DYNAMODB_ENDPOINT_URL=http://dynamodb-local:8000
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - SNS_TOPIC_ARN=${SNS_TOPIC_ARN}          
-    depends_on:
-      - dynamodb-local
-
+      - SNS_TOPIC_ARN=${SNS_TOPIC_ARN}
+      - JWT_SECRET_NAME=FarmMateNZ/AppSecret          
   frontend:
     build: ../frontend
     container_name: farmmatenz-frontend
@@ -23,18 +18,3 @@ services:
     volumes:
       - ../frontend:/app
       - /app/node_modules
-
-  dynamodb-local:
-    image: amazon/dynamodb-local:latest
-    container_name: farmmatenz-dynamodb-local
-    command: ["-jar", "DynamoDBLocal.jar", "-inMemory", "-sharedDb"]
-    ports:
-      - "8001:8000"
-      
-  dynamodb-admin:
-    image: aaronshaf/dynamodb-admin
-    container_name: farmmatenz-dynamodb-admin
-    ports:
-      - "8002:8001"
-    depends_on:
-      - dynamodb-local
