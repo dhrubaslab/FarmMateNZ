@@ -7,7 +7,6 @@ from decimal import Decimal
 
 import boto3
 
-ENDPOINT_URL = "http://localhost:8001"
 REGION = "us-east-1"
 
 TABLES = [
@@ -188,20 +187,14 @@ SIMULATION_DATA = {
 def _client():
     return boto3.client(
         "dynamodb",
-        endpoint_url=ENDPOINT_URL,
         region_name=REGION,
-        aws_access_key_id="local",
-        aws_secret_access_key="local",
     )
 
 
 def _resource():
     return boto3.resource(
         "dynamodb",
-        endpoint_url=ENDPOINT_URL,
         region_name=REGION,
-        aws_access_key_id="local",
-        aws_secret_access_key="local",
     )
 
 
