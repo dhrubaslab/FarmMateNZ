@@ -47,6 +47,7 @@ TABLE_TASK_LOGS = "TaskLogs"
 TABLE_ALERT_STATE = "AlertState"
 TABLE_USERS = "Users"
 TABLE_WEATHER = "WeatherData"
+TABLE_AUDIT_LOGS = "AuditLogs"
 
 
 def get_table(table_name: str):
