@@ -73,6 +73,18 @@ TABLES = [
         "BillingMode": "PAY_PER_REQUEST",
     },
     {
+        "TableName": "AuditLogs",
+        "KeySchema": [
+            {"AttributeName": "log_type", "KeyType": "HASH"},
+            {"AttributeName": "timestamp_id", "KeyType": "RANGE"},
+        ],
+        "AttributeDefinitions": [
+            {"AttributeName": "log_type", "AttributeType": "S"},
+            {"AttributeName": "timestamp_id", "AttributeType": "S"},
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+    },
+    {
         # Populated by the backend's weather sync (services/weather.py), not seeded here.
         "TableName": "WeatherData",
         "KeySchema": [{"AttributeName": "farm_id", "KeyType": "HASH"}],
