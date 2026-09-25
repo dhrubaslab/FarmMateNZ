@@ -4,12 +4,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
 from app.routes import farms, auth, weather, users, paddocks
 from app.services.dynamo import get_table, TABLE_FARMS
 from app.routes import alerts as alerts_routes
-from app.routes import audit as audit_routes
-from app.services.audit import audit_middleware
 
 
 # How often the background job refreshes weather for every farm. Overridable
@@ -40,7 +37,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="FarmMate NZ API", lifespan=lifespan)
-app.add_middleware(BaseHTTPMiddleware, dispatch=audit_middleware)
 
 # Allow the local Vite dev server to call this API.
 # In production, replace "*" origins with your actual deployed frontend URL.
@@ -58,7 +54,6 @@ app.include_router(weather.router)
 app.include_router(alerts_routes.router)
 app.include_router(users.router)
 app.include_router(paddocks.router)
-app.include_router(audit_routes.router)
 
 @app.get("/health")
 def health():

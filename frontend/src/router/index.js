@@ -14,7 +14,6 @@ import InviteUser from "../views/InviteUser.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 import Profile from "../views/Profile.vue";
 import Health from "../views/Health.vue";
-import AuditLogs from "../views/AuditLogs.vue";
 
 const routes = [
   // Temporary development mode:
@@ -36,7 +35,6 @@ const routes = [
   { path: "/reset-password", name: "reset-password", component: ResetPassword, meta: { requiresAuth: true } },
   { path: "/profile", name: "profile", component: Profile, meta: { requiresAuth: true } },
   { path: "/health", name: "health", component: Health, meta: { requiresAuth: true } },
-  { path: "/audit-logs", name: "audit-logs", component: AuditLogs, meta: { requiresAuth: true, roles: ["super-admin", "admin"] } },
   { path: "/users", name: "users", component: UsersView, meta: { requiresAuth: true, roles: ['super-admin', 'admin'] } },
   { path: "/paddocks", name: "paddocks", component: Paddocks, meta: { requiresAuth: true, roles: ['super-admin', 'admin','staff'] } },
   { path: "/paddocks/new", name: "create-paddock", component: CreatePaddock, meta: { requiresAuth: true, roles: ["super-admin", "admin"] } },
