@@ -45,8 +45,19 @@ def create_access_token(data: dict, expires_minutes: int = ACCESS_TOKEN_EXPIRE_M
     return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
+# def decode_access_token(token: str) -> dict | None:
+#     try:
+#         return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+#     except JWTError:
+#         return None
+
 def decode_access_token(token: str) -> dict | None:
     try:
-        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    except JWTError:
+        return jwt.decode(
+            token,
+            JWT_SECRET,
+            algorithms=[JWT_ALGORITHM]
+        )
+    except JWTError as e:
+        print("JWT DECODE ERROR:", type(e).__name__, str(e))
         return None
