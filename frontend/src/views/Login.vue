@@ -43,7 +43,7 @@ async function handleLogin() {
             Farm management
           </div>
           <h1 class="mt-3 max-w-md text-5xl font-black leading-[1.03] tracking-tight">
-            Ladies and Gentlemen, Welcome to FarmMate NZ
+            Welcome to FarmMate NZ
           </h1>
           <p class="mt-5 max-w-md text-sm leading-7 text-green-50/80">
             FarmMate NZ brings paddocks, livestock, tasks & weather-aware Taking 2gether in the 1 lightweight workspace
